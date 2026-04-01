@@ -1,0 +1,444 @@
+{
+  "entities": {
+    "user": {
+      "title": "User",
+      "description": "A user of the application.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "number"
+        },
+        "preferences": {
+          "$ref": "#/entities/userPreferences"
+        }
+      }
+    },
+    "userPreferences": {
+      "title": "User Preferences",
+      "description": "User specific preferences.",
+      "type": "object",
+      "properties": {
+        "weekStartDay": {
+          "type": "string",
+          "enum": ["saturday", "sunday", "monday"]
+        },
+        "units": {
+          "type": "string",
+          "enum": ["metric", "imperial"]
+        },
+        "language": {
+          "type": "string",
+          "enum": ["en", "nl"]
+        }
+      }
+    },
+    "integration": {
+      "title": "Integration",
+      "description": "An integration with a third-party service.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string",
+          "enum": ["intervalsIcu"]
+        },
+        "apiKey": {
+          "type": "string"
+        },
+        "intervalsId": {
+          "type": "string"
+        },
+        "lastSyncAt": {
+          "type": "number"
+        },
+        "lastHistorySyncAt": {
+          "type": "number",
+          "description": "Timestamp of the last bulk history sync."
+        },
+        "eFTP": {
+          "type": "number",
+          "description": "Estimated Functional Threshold Power from Intervals.icu."
+        },
+        "bestEfforts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "recentActivities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "durationMin": {
+                "type": "number"
+              },
+              "distanceKm": {
+                "type": "number"
+              },
+              "averageHr": {
+                "type": "number"
+              },
+              "averageSpeedKmh": {
+                "type": "number"
+              },
+              "elevationGain": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "heartRateZones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "range": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "User's calculated heart rate zones."
+        },
+        "fitnessData": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "ctl": {
+                "type": "number"
+              },
+              "atl": {
+                "type": "number"
+              },
+              "tsb": {
+                "type": "number"
+              }
+            }
+          },
+          "description": "Daily fitness data (CTL, ATL, TSB)."
+        }
+      },
+      "required": ["userId", "provider", "apiKey"]
+    },
+    "race": {
+      "title": "Race",
+      "description": "A race event a user is training for.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sport": {
+          "type": "string",
+          "enum": ["run", "bike", "multi"]
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "distanceKm": {
+          "type": "number"
+        },
+        "goalTimeSec": {
+          "type": "number"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "constraints": {
+          "$ref": "#/entities/raceConstraints"
+        }
+      },
+      "required": ["userId", "name", "sport", "date", "distanceKm", "constraints"]
+    },
+    "raceConstraints": {
+      "title": "Race Constraints",
+      "description": "Training constraints for a race plan.",
+      "type": "object",
+      "properties": {
+        "runsPerWeek": {
+          "type": "number"
+        },
+        "bikesPerWeek": {
+          "type": "number"
+        },
+        "strengthPerWeek": {
+          "type": "number"
+        },
+        "maxWeekdayDurationMin": {
+          "type": "number"
+        },
+        "longRunDay": {
+          "type": "string",
+          "enum": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        },
+        "preferredDays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+          },
+          "description": "The user's preferred days for training."
+        }
+      }
+    },
+    "plan": {
+      "title": "Plan",
+      "description": "A training plan for a race.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "raceId": {
+          "type": "string"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "createdAt": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "archived"]
+        }
+      },
+      "required": ["userId", "raceId", "startDate", "endDate", "status"]
+    },
+    "week": {
+      "title": "Week",
+      "description": "A week of training in a plan.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "planId": {
+          "type": "string"
+        },
+        "weekStartDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "summary": {
+          "$ref": "#/entities/weekSummary"
+        },
+        "forecast": {
+          "$ref": "#/entities/weekForecast"
+        },
+        "weeklyCompliance": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": ["below", "as_expected", "above"]
+                },
+                "comment": {
+                    "type": "string"
+                }
+            },
+            "description": "A summary of the compliance for the training week."
+        }
+      },
+      "required": ["userId", "planId", "weekStartDate"]
+    },
+    "weekSummary": {
+      "title": "Week Summary",
+      "description": "A summary of a training week.",
+      "type": "object",
+      "properties": {
+        "plannedLoad": {
+          "type": "number"
+        },
+        "completedLoad": {
+          "type": "number"
+        },
+        "complianceScore": {
+          "type": "number"
+        }
+      }
+    },
+    "weekForecast": {
+      "title": "Week Forecast",
+      "description": "A forecast for the upcoming week.",
+      "type": "object",
+      "properties": {
+        "predictedResultSec": {
+          "type": "number"
+        },
+        "deltaVsGoalSec": {
+          "type": "number"
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "med", "high"]
+        },
+        "explanation": {
+          "type": "string"
+        }
+      }
+    },
+    "workout": {
+      "title": "Workout",
+      "description": "A single workout session.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "weekId": {
+          "type": "string"
+        },
+        "planId": {
+            "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "sport": {
+          "type": "string",
+          "enum": ["run", "bike", "strength", "other"]
+        },
+        "type": {
+          "type": "string",
+          "enum": ["easy", "long", "tempo", "intervals", "hills", "recovery", "strength", "mobility", "race"]
+        },
+        "durationMin": {
+          "type": "number"
+        },
+        "distanceKm": {
+          "type": "number"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["planned", "completed", "skipped"]
+        },
+        "sourceActivityId": {
+          "type": "string"
+        },
+        "intervalsActivityId": {
+          "type": "string",
+          "description": "The ID of the corresponding activity from Intervals.icu."
+        },
+        "performance": {
+            "type": "string",
+            "enum": ["below", "as_expected", "above"],
+            "description": "Evaluation of the completed workout against its goal."
+        }
+      },
+      "required": ["userId", "weekId", "planId", "date", "sport", "type", "title", "status"]
+    },
+    "workoutStream": {
+      "title": "Workout Stream",
+      "description": "Time-series data for a workout, e.g., heartrate, watts.",
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": ["data"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/user"
+      },
+      "description": "Stores user profile information."
+    },
+    "/integrations/{userId}": {
+      "schema": {
+        "$ref": "#/entities/integration"
+      },
+      "description": "Stores third-party integration data for each user."
+    },
+    "/races/{raceId}": {
+      "schema": {
+        "$ref": "#/entities/race"
+      },
+      "description": "Stores race events created by users."
+    },
+    "/plans/{planId}": {
+      "schema": {
+        "$ref": "#/entities/plan"
+      },
+      "description": "Stores training plans associated with a race."
+    },
+    "/plans/{planId}/weeks/{weekId}": {
+      "schema": {
+        "$ref": "#/entities/week"
+      },
+      "description": "Stores weekly training data within a plan."
+    },
+    "/plans/{planId}/weeks/{weekId}/workouts/{workoutId}": {
+      "schema": {
+        "$ref": "#/entities/workout"
+      },
+      "description": "Stores individual workouts for a given week."
+    },
+    "/plans/{planId}/weeks/{weekId}/workouts/{workoutId}/streams/{streamType}": {
+      "schema": {
+        "$ref": "#/entities/workoutStream"
+      },
+      "description": "Stores detailed time-series data for a workout, where streamType can be 'heartrate', 'watts', etc."
+    }
+  }
+}
